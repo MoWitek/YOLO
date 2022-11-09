@@ -27,7 +27,7 @@ def fuze_slopes(s, fill=1, back=0):
 		arr.append([])
 		arr[-1].extend(a)
 		arr[-1].extend(b[1:])
-	for c, d in zip(a3[1:], a2):
+	for c, d in zip(a3[1:], a2[1:]):
 		arr.append([])
 		arr[-1].extend(c)
 		arr[-1].extend(d[1:])
@@ -35,4 +35,4 @@ def fuze_slopes(s, fill=1, back=0):
 	return arr
 
 	
-print_board(fuze_slopes(20))
+print_board(fuze_slopes(3))
