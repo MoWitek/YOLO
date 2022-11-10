@@ -1,3 +1,5 @@
+from datasets import NormalAufgabe1
+
 def main():
     alice = "./stuff/Aufgabe1/Alice_im_Wunderland.txt"
 
@@ -5,9 +7,12 @@ def main():
         content = f.read().decode("utf-8").lower()
 
 
-    blacklist = "»«,.!?;:\"'&*()-_¹¶[]=\n"
+    blacklist = "»«,.!?;:\"'&*()-_¹¶[]="
     for b in blacklist:
         content = content.replace(b, " ")
+    content.replace("\n", " ")
+    content.replace("  ", " ")
+
 
     words = content.split(" ")
     words = list(filter(" ".__ne__, words))
@@ -18,6 +23,7 @@ def main():
 
         possibilities = [(words[inx: inx + len(patterns)]) for inx in inxs]
 
+        ps = []
         for p in possibilities:
             for pos_part, pat_part in zip(p, patterns):
                 if pat_part == "_":
@@ -26,8 +32,8 @@ def main():
                 if pat_part != pos_part:
                     break
             else:
-                return p
-
+                ps.append(p)
+        return ps
 
     dingse = [
         "das _ mir _ _ _ vor",
@@ -37,10 +43,18 @@ def main():
         "ein _ _ tag",
         "wollen _ so _ sein"
     ]
+    dingse = [
+        getattr(NormalAufgabe1, atr) for atr in [f"txt{n}" for n in range(6)]
+    ]
     y = []
     for dings in dingse:
         x = rec_starter(dings.split(" "))
-        y.append(x is not None)
+        y.append(x != [])
+        print(f"Phrases matching | {dings} |")
+        print("\n".join([" ".join(z) for z in x]))
+        print()
+
+    assert list(set(y)) == [True]
 
     return y
 

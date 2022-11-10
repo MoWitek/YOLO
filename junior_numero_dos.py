@@ -3,7 +3,7 @@ from typing import List, Dict, Tuple
 from datasets import JuniorAufgabe2
 
 
-data = [[tuple(x.split(" ")) for x in s.split("\n")] for s in JuniorAufgabe2.txt1.split("\n")]
+data = [[tuple(x.split(" ")) for x in s.split("\n")] for s in JuniorAufgabe2.txt4.split("\n")]
 
 
 def count(arr):
@@ -49,7 +49,7 @@ def main():
 
 
     if true_king:
-        print(id, "IS THE HEVIEST, mf")
+        print(id, "IS THE biggest")
     else:
         print("no true king")
 

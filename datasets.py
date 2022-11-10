@@ -25,7 +25,6 @@ class NormalAufgabe1:
     txt4 = _bloat["nr1"]["txt4"]
     txt5 = _bloat["nr1"]["txt5"]
 
-
 del _bloat
 
 

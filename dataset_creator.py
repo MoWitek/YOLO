@@ -2,11 +2,11 @@ import json
 
 def read(file):
     with open(file, "rb") as f:
-        return f.read().decode("utf-8")
+        return f.read().decode("UTF-8")
 
 def write(file, data):
-    with open(file, "w") as f:
-        f.write(data)
+    with open(file, "wb") as f:
+        f.write(data.encode("UTF-8"))
 
 if __name__ == "__main__":
     json_doc = {
