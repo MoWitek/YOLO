@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-def fak(dictionary, *, free_line=True):
+
+class NotHumanConfirmed(Exception):
+    pass
+
+
+def visualize(dictionary, *, free_line=True):
     head = "│ "
     string_parts = []
 
@@ -24,8 +29,8 @@ def Test(things: list, *, class_name_extractor: callable = None, print_error_loc
             filter(None.__ne__, [(getattr(cls, atr) if atr[:2] != "__" else None) for atr in dir(cls)]))
     function = type(lambda: None)
 
-    def tree_walker(thing, hooker_part):
-        yeet = True
+    def tree_walker(thing, hook_part, passed_msg="Passed!", failed_msg="FAILED!", not_human_confirmed="!HUMAN"):
+        yeet = passed_msg
         if type(thing) is function:
             try:
                 try:
@@ -33,46 +38,47 @@ def Test(things: list, *, class_name_extractor: callable = None, print_error_loc
                 except TypeError:
                     thing(None)
 
+            except NotHumanConfirmed:
+                yeet = not_human_confirmed
             except AssertionError:
                 headaches.append(thing)
-                yeet = False
+                yeet = failed_msg
 
-            hooker_part[thing.__name__] = yeet
+            hook_part[thing.__name__] = yeet
 
         else:
-            hooker_part[thing.__name__] = {}
+            hook_part[thing.__name__] = {}
             for sub in class_name_extractor(thing):
-                tree_walker(sub, hooker_part[thing.__name__])
+                tree_walker(sub, hook_part[thing.__name__])
 
-    hooker = {}
+    hook = {}
     headaches = []
     for x in things:
-        tree_walker(x, hooker)
+        tree_walker(x, hook)
 
-    fak(hooker)
+    visualize(hook)
 
     if headaches:
         print()
         if print_error_locations:
-            print("fucks at:")
-            for fuck_up in headaches:
-                print(fuck_up.__qualname__)
+            print("errors at:")
+            for err in headaches:
+                print(err.__qualname__)
 
 
 if __name__ == '__main__':
-
     class idk:
 
-        def FAK(self):
+        def thing(self):
             assert True
 
         @staticmethod
-        def fuck():
+        def other():
             assert True
 
-        class faaak():
+        class aaaaa():
             @staticmethod
-            def kys():
+            def bbbb():
                 assert True
 
             def error(self):

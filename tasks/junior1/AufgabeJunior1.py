@@ -1,131 +1,87 @@
 from datasets import JuniorAufgabe1 as Aufgabe
 
 
-def is_vok(str):
+def has_voc(str):
     for l in str:
-        if l not in "aeiouöäü":
+        if l not in "aeiouöäü":  # öüä -> CRINGE
             return False
     return True
 
-def get_vokalgruppe(word):
+# taifun  -> t  ai f u n
+# aaabbbcdefg -> aaa bbbcd e fg
+def get_vokalgrupe(word):
     syl = word[0]
     sylables = []
-    last = not is_vok(syl)
+    last = not has_voc(syl)
     for l in word[1:]:
-        if is_vok(l) is last:
+        if has_voc(l) is last:
             sylables.append(syl)
             syl = ""
             last = not last
         syl += l
     sylables.append(syl)
-        
+
     return sylables
 
-# 
+
 def regel1(w1: str, w2: str):
     def get_last_same(word):
-        syl1 = get_vokalgruppe(word)
+        syl1 = get_vokalgrupe(word)
 
-        if not is_vok(syl1[0]):
+        if not has_voc(syl1[0]):
             syl1.pop(0)
-
-        # print(syl1)
 
         buff = ""
         br = 0
         for sr in syl1[::-1]:
             buff += sr[::-1]
-            if is_vok(sr):
+            if has_voc(sr):
                 br += 1
                 if br == 2:
                     break
-        buff = buff[::-1]
 
-        return buff
+        return buff[::-1]
 
     v1, v2 = get_last_same(w1), get_last_same(w2)
 
-
     return v1 == v2
-        
-    # if (v1[(-2) if len(v1) > 1 else -1]) !=  (v2[(-2) if len(v2) > 1 else -1]):
-    #     return False
 
-    # return True
 
-# 
 def regel2(w1: str, w2: str):
-    # might be useful
-    """# selbe maßgebliche vokalgruppe
-    def fn(w):
-        syl1 = get_vokalgruppe(w)
+    def vocals(word):
+        syl1 = get_vokalgrupe(word)
 
-        if not is_vok(syl1[0]):
-           syl1.pop(0) 
-        syl1 = list(filter(is_vok, syl1))
-            
-        mx = []
-        prev = syl1[0]
-        for s in syl1[1:]:
-            if len(prev + s) > len("".join(mx)):
-                mx = [prev, s]
-        
-        return mx
+        if not has_voc(syl1[0]):
+            syl1.pop(0)
+        syl1 = list(filter(has_voc, syl1))
 
-    # letzer
-    v1, v2 = fn(w1), fn(w2)
-    if v1 != v2:
-        return False
-
-    def fn(voc_grp, w):
-        pass"""
-
-    def vokale(word):
-        syl1 = get_vokalgruppe(word)
-
-        if not is_vok(syl1[0]):
-           syl1.pop(0) 
-        syl1 = list(filter(is_vok, syl1))
-        
         return syl1
 
-    v1, v2 = vokale(w1), vokale(w2)
+    v1, v2 = vocals(w1), vocals(w2)
 
-    # print(v1, v2)
-    # letzte vokale gleich
-    # print(v1)
-    
-    if (v1[(-2) if len(v1) > 1 else -1]) !=  (v2[(-2) if len(v2) > 1 else -1]):
+
+    if (v1[(-2) if len(v1) > 1 else -1]) != (v2[(-2) if len(v2) > 1 else -1]):
         return False
-    
 
     def fn(word):
-        syl1 = get_vokalgruppe(word)
+        syl1 = get_vokalgrupe(word)
 
         buff = ""
         for l in syl1[::-1][:4]:
-            buff+=l
+            buff += l
 
-        if len(buff) / len(word) < .5:
-            return False
+        return not len(buff) / len(word) < .5
 
-        return True
-    
-    if not fn(w1):
-        return False
-     
-    if not fn(w2):
-        return False
-    
-    return True
-
+    return not (not fn(w1) or not fn(w2))
 
 
 def regel3(w1: str, w2: str):
     return not w1.endswith(w2) or w2.endswith(w1)
-    
+
+
 def regel123(w1: str, w2: str):
     return regel1(w1, w2), regel2(w1, w2), regel3(w1, w2)
+
 
 def sorter(words: list):
     pairs = []
@@ -136,8 +92,6 @@ def sorter(words: list):
             for i, w2 in enumerate(words):
                 if regel1(w1, w2) and regel2(w1, w2) and regel3(w1, w2):
                     pairs.append((w1, w2))
-                    # print(pairs)
-                    # print(w1, w2, words)
                     words.pop(i)
                     break
             else:
@@ -146,14 +100,14 @@ def sorter(words: list):
     finally:
         return pairs, lost
 
-def main():
-    words = Aufgabe.txt3.lower().split("\n")
 
-    x, y = sorter(words)
+def match_rhymes(data: str = Aufgabe.txt3):
+    words = data.lower().split("\n")
 
-    print(x)
-    print("\n")
-    print(y)
-    
+    return sorter(words)
+
+
 if __name__ == "__main__":
-    main()
+    print(match_rhymes(Aufgabe.txt2))
+
+    print(regel123("konsumption", "absorption"))

@@ -1,62 +1,51 @@
 from datasets import NormalAufgabe1
 
-def main():
-    alice = "./stuff/Aufgabe1/Alice_im_Wunderland.txt"
+def preprocess_data(string: str):
+    string = string.lower()
 
-    with open(alice, "rb") as f:
-        content = f.read().decode("utf-8").lower()
+    oks = "abcdefghijklmnopqrstuvwxyzöäüß"
 
+    blacklist = set(string) - set(oks)
 
-    blacklist = "»«,.!?;:\"'&*()-_¹¶[]="
     for b in blacklist:
-        content = content.replace(b, " ")
-    content.replace("\n", " ")
-    content.replace("  ", " ")
+        string = string.replace(b, " ")
 
+    string = string.replace("\n", " ").replace("  ", " ")
 
-    words = content.split(" ")
+    words = string.split(" ")
     words = list(filter(" ".__ne__, words))
+    words = list(filter("".__ne__, words))
+
+    return words
+
+def searcher(words, pattern: str):
+    pattern = pattern.split(" ")
+
+    inxs = [i for i, v in enumerate(words) if v == pattern[0]]  # get all positions of first word, since its always known
+
+    possibilities = [(words[inx: inx + len(pattern)]) for inx in inxs]  # get the first word and a few words after it
+
+    ps = []
+    for p in possibilities:
+        for pos_part, pat_part in zip(p, pattern):
+            if pat_part == "_":
+                continue
+
+            if pat_part != pos_part:
+                break
+        else:
+            ps.append(p)
+
+    return ps
 
 
-    def rec_starter(patterns: list):
-        inxs = [i for i, v in enumerate(words) if v == patterns[0]]
+def regex_search(pattern, text: str = NormalAufgabe1.alice):
 
-        possibilities = [(words[inx: inx + len(patterns)]) for inx in inxs]
+    words = preprocess_data(text)
 
-        ps = []
-        for p in possibilities:
-            for pos_part, pat_part in zip(p, patterns):
-                if pat_part == "_":
-                    continue
-
-                if pat_part != pos_part:
-                    break
-            else:
-                ps.append(p)
-        return ps
-
-    dingse = [
-        "das _ mir _ _ _ vor",
-        "ich muß _ clara _",
-        "fressen _ gern _",
-        "das _ fing _",
-        "ein _ _ tag",
-        "wollen _ so _ sein"
-    ]
-    dingse = [
-        getattr(NormalAufgabe1, atr) for atr in [f"txt{n}" for n in range(6)]
-    ]
-    y = []
-    for dings in dingse:
-        x = rec_starter(dings.split(" "))
-        y.append(x != [])
-        print(f"Phrases matching | {dings} |")
-        print("\n".join([" ".join(z) for z in x]))
-        print()
-
-    assert list(set(y)) == [True]
-
-    return y
+    return searcher(words, pattern)
 
 if __name__ == '__main__':
-    main()
+    pat = NormalAufgabe1.txt5
+    print(pat)
+    print(regex_search(pat))
