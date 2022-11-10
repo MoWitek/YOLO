@@ -1,8 +1,8 @@
 import json
 
 def read(file):
-    with open(file, "r") as f:
-        return f.read()
+    with open(file, "rb") as f:
+        return f.read().decode("utf-8")
 
 def write(file, data):
     with open(file, "w") as f:

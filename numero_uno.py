@@ -1,8 +1,9 @@
 def main():
-    alice = "cringelig"
+    alice = "./stuff/Aufgabe1/Alice_im_Wunderland.txt"
 
     with open(alice, "rb") as f:
         content = f.read().decode("utf-8").lower()
+
 
     blacklist = "»«,.!?;:\"'&*()-_¹¶[]=\n"
     for b in blacklist:
@@ -43,3 +44,5 @@ def main():
 
     return y
 
+if __name__ == '__main__':
+    main()
