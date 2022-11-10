@@ -8,8 +8,7 @@ def write(file, data):
     with open(file, "wb") as f:
         f.write(data.encode("UTF-8"))
 
-if __name__ == "__main__":
-    json_doc = {
+json_doc = {
         "jr1": {
             "txt0": "bemühen\nBiene\nbreitschlagen\nglühen\nhersagen\nHygiene\nKnecht\nRecht\nSchiene\nschlank\nSchwank",
             "txt1": "Absorption\nBildnis\nBrote\nGeständnis\nKonsumption\nNote\nPaprikaschote\nWildnis\nXOR-Funktion",
@@ -24,17 +23,18 @@ if __name__ == "__main__":
             "txt4": "20 6\n15 7\n10 3\n5 3\n8 18\n5 16\n9 12\n3 9\n20 4\n9 7\n3 1\n12 11\n6 2\n2 11\n19 6\n17 1\n5 7\n3 6\n9 17\n19 3\n5 18\n20 13\n20 11\n14 12\n14 15\n4 1\n20 2\n20 17\n14 20\n14 9\n16 11\n5 1\n5 11\n3 17\n8 17\n17 6\n20 19\n8 13\n13 9\n20 10\n17 11\n8 3\n7 2\n14 13\n16 2\n5 2\n20 12\n8 1\n9 6\n8 11\n5 19\n17 2\n13 11\n20 3\n14 19\n19 11\n10 2\n16 13\n5 15\n14 17\n5 20\n14 6\n8 2\n5 14\n15 2\n20 7\n3 7\n10 9\n14 4\n15 11\n8 7\n7 1\n9 18\n10 11\n4 18\n7 6\n13 17\n16 9\n10 18\n8 9\n9 11\n15 18\n9 4\n2 1\n8 19\n16 15\n8 16\n5 10\n10 6\n16 4\n18 1\n19 12\n5 4\n13 7\n3 2\n4 2\n6 11\n7 11\n15 9\n19 10\n12 1\n10 15\n14 1\n19 7\n17 18\n19 18\n4 6\n14 18\n10 4\n10 12\n20 1\n18 2\n20 18\n15 3\n8 14\n3 12\n3 11\n13 12\n16 18\n15 12\n8 12\n2 12\n5 17\n19 1\n19 2\n6 18\n4 17\n8 20\n5 12\n15 6\n16 12\n18 11\n14 7\n15 4\n16 3\n20 9\n16 7\n18 12\n6 12\n14 10\n20 16\n10 1\n6 1\n16 17\n15 1\n13 4\n8 4\n5 8\n5 13\n3 4",
         },
         "nr1": {
-            "alice.txt": read("./stuff/Aufgabe1/Alice_im_Wunderland.txt"),
-            "txt0": read("./stuff/Aufgabe1/stoerung0.txt"),
-            "txt1": read("./stuff/Aufgabe1/stoerung1.txt"),
-            "txt2": read("./stuff/Aufgabe1/stoerung2.txt"),
-            "txt3": read("./stuff/Aufgabe1/stoerung3.txt"),
-            "txt4": read("./stuff/Aufgabe1/stoerung4.txt"),
-            "txt5": read("./stuff/Aufgabe1/stoerung5.txt"),
+            "alice.txt": read("../.././stuff/Aufgabe1/Alice_im_Wunderland.txt"),
+            "txt0": "das _ mir _ _ _ vor",
+            "txt1": "ich muß _ clara _",
+            "txt2": "fressen _ gern _",
+            "txt3": "das _ fing _",
+            "txt4": "ein _ _ tag",
+            "txt5": "wollen _ so _ sein"
         },
         "nr3": {}
     }
 
+def save_json():
     write("datasets.json", json.dumps(json_doc))
 
 

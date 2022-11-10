@@ -1,43 +1,5 @@
 from datasets import JuniorAufgabe1 as Aufgabe
 
-"""
-1) Die beiden Worte enden gleich: Sie haben
-dieselbe maßgebliche Vokalgruppe, und nach der
-maßgeblichen Vokalgruppe enthalten beide Wörter
-dieselben Buchstaben in derselben Reihenfolge.
-Dabei ist eine Vokalgruppe eine längstmögliche
-Folge von unmittelbar aufeinanderfolgenden
-Vokalen (z.B. hat das Wort
-Taifun die Vokalgruppen
-ai und u), und die maßgebliche Vokalgruppe
-eines Wortes ist seine vorletzte Vokalgruppe, wenn
-das Wort zwei oder mehr Vokalgruppen enthält.
-Enthält ein Wort nur eine Vokalgruppe, ist seine
-maßgebliche Vokalgruppe die eine vorhandene
-Vokalgruppe.
-
-2) In jedem der beiden Wörter enthält die maß-
-gebliche Vokalgruppe und was ihr folgt mindestens
-die Hälfte der Buchstaben.
-
-3) Keines der beiden Wörter darf mit dem kom-
-pletten anderen Wort enden.
-
-Passende Wortpaare wären zum Beispiel
-Baum,Traum und
-singen,
-klingen; aber
-Tanne,
-Rinne ver-
-letzt Regel 1,
-Informatik,
-Akrobatik verletzt Regel
-2, und
-kaufen,
-verkaufen verletzt Regel 3.
-Wende dein Programm mindestens auf alle
-Beispiele an, die du auf den BWINF-Webseit
-"""
 
 def is_vok(str):
     for l in str:
@@ -129,7 +91,7 @@ def regel2(w1: str, w2: str):
 
     v1, v2 = vokale(w1), vokale(w2)
 
-    #print(v1, v2)
+    # print(v1, v2)
     # letzte vokale gleich
     # print(v1)
     

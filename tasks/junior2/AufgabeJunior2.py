@@ -1,10 +1,6 @@
 from __future__ import annotations
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from datasets import JuniorAufgabe2
-
-
-data = [[tuple(x.split(" ")) for x in s.split("\n")] for s in JuniorAufgabe2.txt4.split("\n")]
-
 
 def count(arr):
     counts = {}
@@ -13,7 +9,9 @@ def count(arr):
     return counts
 
 
-def main():
+def main(data: str = JuniorAufgabe2.txt4):
+    data = [[tuple(x.split(" ")) for x in s.split("\n")] for s in data.split("\n")]
+
     d = data[1]
 
     vs: Dict[str, List[str]] = {}
@@ -46,14 +44,7 @@ def main():
             true_king = False
             print("fak", x)
 
-
-
-    if true_king:
-        print(id, "IS THE biggest")
-    else:
-        print("no true king")
-
-
+    return id if true_king else None
 
 if __name__ == "__main__":
     main()
