@@ -1,6 +1,7 @@
+from datetime import datetime
+
 test_file = "../../stuff/Aufgabe4/fahrradwerkstatt0.txt"
 lines = []
-
 """
 1. Der erste Wert ist der Eingangszeitpunkt in Minuten seit Start t0.
 2. Der zweite Wert ist die geschätzte Dauer in Minuten. 
@@ -8,24 +9,24 @@ lines = []
 4. Marc arbeitet jeden von 9 bis 17
 """
 
-def to_minutes(hours: int):
-    return hours * 60
+"""
+Plan:
+    - convert minutes to hh:mm                          DONE
+    - convert hh:mm to datetime for better comparison   DONE
+    - check if between 09:00 and 17:00                  DONE
+    - add as many minutes as possible
+"""
 
-def get_durations():
-    durations = []
+def convert_time(minutes: int):
+    time = '{:02d}:{:02d}'.format(*divmod(minutes, 60))
+    dt = datetime.combine(datetime.today(), datetime.strptime(time, '%H:%M').time())
+    return dt
+
+def read_lines():
     with open(test_file, 'r') as f:
         lines = f.readlines()
-        tmp = []
-        for l in lines:
-            tmp = l.split(' ')
-            durations.append(int(tmp[1]))
-        return durations
+    return lines
 
-def average_duration():
-    sum = 0
-    for d in get_durations():
-        sum += d
-
-    return sum / len(get_durations())
-
-
+def is_day(minutes: int):
+    t = convert_time(minutes)
+    return t.hour >= 9 and t.hour < 17

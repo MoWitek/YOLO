@@ -1,3 +1,3 @@
 import aufgabe4
 
-print(aufgabe4.average_duration())
+print(aufgabe4.is_day(800))
