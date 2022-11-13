@@ -140,6 +140,9 @@ def main():
     print(get_done_job_results(m))
 
 
+# :TODO:
+# detect when day passes
+
 if __name__ == '__main__':
     main()
 

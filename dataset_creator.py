@@ -1,7 +1,5 @@
 import json
 
-from os import curdir
-
 def read(file):
     with open(file, "rb") as f:
         return f.read().decode("UTF-8")
