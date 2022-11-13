@@ -131,20 +131,14 @@ class Verfahren1(JobThing):
             self._time += work_on_job_left
             return True  # job done
 
+
 def get_done_job_results(jobs: List[DoneJob]):
-    maks = 0
-    total_wait = 0
-    total_waits = 0
-
+    waits = []
     for j in jobs:
-        wait = j.finish - j.job.starttime
-        total_waits += 1
-        total_wait += wait
+        waits.append(j.finish - j.job.starttime)
 
-        if wait > maks:
-            maks = wait
+    return sum(waits) / len(waits), max(waits)
 
-    return total_wait / total_waits if total_wait != 0 else 1, maks
 
 def main():
     data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt0.split("\n")]
