@@ -10,11 +10,14 @@ class Job:
         self.work_done = 0
 
     def __str__(self):
-        return f"{self.starttime} -> {self.neededtime}"
+        return f"JOB[st{self.starttime}][ne{self.neededtime}][wd{self.work_done}]"
 
     def __repr__(self):
         return self.__str__()
 
+class EmptyJob(Job):
+    def __init__(self):
+        super().__init__(0, 0)
 
 class DoneJob:
     def __init__(self, job: Job, finish):
@@ -28,6 +31,10 @@ class DoneJob:
 
     def __repr__(self):
         return self.__str__()
+
+class EmptyDoneJob(DoneJob):
+    def __init__(self):
+        super().__init__(EmptyJob(), 0)
 
 class Time:
     @classmethod
@@ -64,18 +71,21 @@ class JobThing:  # treat this as a abstract
         self.done_jobs: List[DoneJob] = []
 
     def main(self) -> List[DoneJob]:
-        done: bool
-        job = self.pick_new_job()
+        done: bool = True
+        job: Job = EmptyJob()
         while self.jobs:
-            done = self.do_work_on_job(job)
-
             if done:
                 self.done_jobs.append(DoneJob(job, self._time))
                 job = self.pick_new_job()
 
+            done = self.do_work_on_job(job)
+
+        while not done:
+            done = self.do_work_on_job(job)
+
         self.done_jobs.append(DoneJob(job, self._time))
 
-        return self.done_jobs
+        return self.done_jobs[1:]
 
     def pick_new_job(self) -> Job:
         raise ForgorInterfaceError
@@ -91,17 +101,21 @@ class Verfahren1(JobThing):
 
     def do_work_on_job(self, job: Job) -> bool:
         # wait until you can do the job
-        if self._time < job.starttime:
+        if self._time <= job.starttime:
             time_left_4_job = job.starttime - self._time
-            if time_left_4_job > self.daily_work_duration:
+
+            # wait for next day
+            if time_left_4_job >= self.daily_work_duration:
                 self._time += self.daily_work_duration
+                return False
+            # if will be able to start working today
             else:
                 self._time += time_left_4_job
-            return False
+
 
         # cant finish job in working hours
         work_on_job_left = job.neededtime - job.work_done
-        if work_on_job_left > self.daily_work_duration:
+        if work_on_job_left >= self.daily_work_duration:
 
             job.work_done += self.daily_work_duration
             self._time += self.daily_work_duration
@@ -115,7 +129,7 @@ class Verfahren1(JobThing):
 
             job.work_done += work_on_job_left
             self._time += work_on_job_left
-            return True
+            return True  # job done
 
 def get_done_job_results(jobs: List[DoneJob]):
     maks = 0
@@ -130,14 +144,12 @@ def get_done_job_results(jobs: List[DoneJob]):
         if wait > maks:
             maks = wait
 
-    return total_wait / total_waits, maks
+    return total_wait / total_waits if total_wait != 0 else 1, maks
 
 def main():
     data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt0.split("\n")]
 
-    data = data[:4]
-
-    print(data)
+    data = data[:5]
 
     jobs: List[Job] = [Job(x, y) for x, y in data]
 
@@ -146,6 +158,7 @@ def main():
     m = j.main()
 
     print(m)
+    print()
     print(get_done_job_results(m))
 
 
