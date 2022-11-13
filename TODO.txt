@@ -4,3 +4,6 @@ aufgabe 1:
 aufgabe 2:
     complete
     fix streching if factor x and y is same
+
+aufgabe 4:
+    finish
