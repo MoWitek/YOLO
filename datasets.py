@@ -25,6 +25,13 @@ class NormalAufgabe1:
     txt4 = _bloat["nr1"]["txt4"]
     txt5 = _bloat["nr1"]["txt5"]
 
+class NormalAufgabe4:
+    txt0 = _bloat["nr4"]["txt0"]
+    txt1 = _bloat["nr4"]["txt1"]
+    txt2 = _bloat["nr4"]["txt2"]
+    txt3 = _bloat["nr4"]["txt3"]
+    txt4 = _bloat["nr4"]["txt4"]
+
 del _bloat
 
 

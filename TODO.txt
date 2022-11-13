@@ -1,0 +1,6 @@
+aufgabe 1:
+    fix if first is _
+
+aufgabe 2:
+    complete
+    fix streching if factor x and y is same
