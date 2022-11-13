@@ -21,8 +21,10 @@ class DoneJob:
         self.job = job
         self.finish = finish
 
+        self.wait = finish - job.starttime
+
     def __str__(self):
-        return f"[{self.job}] -> {self.finish}"
+        return f"<[{self.job}] -> fn {self.finish} | qt {self.wait}>\n"
 
     def __repr__(self):
         return self.__str__()
@@ -71,6 +73,8 @@ class JobThing:  # treat this as a abstract
                 self.done_jobs.append(DoneJob(job, self._time))
                 job = self.pick_new_job()
 
+        self.done_jobs.append(DoneJob(job, self._time))
+
         return self.done_jobs
 
     def pick_new_job(self) -> Job:
@@ -103,6 +107,7 @@ class Verfahren1(JobThing):
             self._time += self.daily_work_duration
 
             # INSERT wait 24h delay sthst
+            self._time += 24 * 60 - self.daily_work_duration
             return False
 
         # can finish job in working hours
@@ -128,7 +133,11 @@ def get_done_job_results(jobs: List[DoneJob]):
     return total_wait / total_waits, maks
 
 def main():
-    data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ")]) for x in NormalAufgabe4.txt0.split("\n")]
+    data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt0.split("\n")]
+
+    data = data[:4]
+
+    print(data)
 
     jobs: List[Job] = [Job(x, y) for x, y in data]
 
@@ -139,9 +148,6 @@ def main():
     print(m)
     print(get_done_job_results(m))
 
-
-# :TODO:
-# detect when day passes
 
 if __name__ == '__main__':
     main()
