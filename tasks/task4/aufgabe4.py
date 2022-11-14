@@ -27,6 +27,13 @@ def read_lines():
         lines = f.readlines()
     return lines
 
+def to_pairs(lines):
+    
+
+# bad name i know, converts every time of an array
+def convert_lines(lines):
+    
+
 def is_day(minutes: int):
     t = convert_time(minutes)
     return t.hour >= 9 and t.hour < 17
