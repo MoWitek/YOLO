@@ -4,12 +4,19 @@ from typing import List, Tuple, Dict, Any
 
 debug = False
 
+
 class Job:
     def __init__(self, starttime, neededtime):
         self.starttime = starttime
         self.neededtime = neededtime
 
         self.work_done = 0
+        self.prio = 1
+
+    def get_prio(self):
+        x = self.prio
+        self.prio += 1
+        return self.neededtime / self.prio
 
     def __str__(self):
         return f"JOB[st{self.starttime}][ne{self.neededtime}][wd{self.work_done}]"
@@ -41,8 +48,10 @@ def get_done_job_results(jobs: List[DoneJob]):
     for j in jobs:
         waits.append(j.finish - j.job.starttime)
 
-    return sum(waits) / len(waits), max(waits)
+    return sum(waits) // len(waits), max(waits)
 
+class IncompleteInterfaceError(NotImplementedError):
+    pass
 
 class JobQueue:
     working_times = 9 * 60, 17 * 60  # everything in minutes
@@ -56,7 +65,7 @@ class JobQueue:
         self._t: int = 0
 
     def get_job(self) -> Job:
-        return self.jobs.pop(0)
+        raise IncompleteInterfaceError
 
     def work(self, job: Job, day_time_left: int) -> Tuple[bool, int]:
 
@@ -126,19 +135,90 @@ class JobQueue:
 
         return self.done_jobs
 
+class Verfahren1(JobQueue):
+    def get_job(self) -> Job:
+        return self.jobs.pop()
 
-def main():
-    data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt0.split("\n")]
+class Verfahren2(JobQueue):
+    def get_job(self) -> Job:
+        time = self._t
 
-    data = data[:5]
+        sm: Job = self.jobs[-1]
+        smi: int = len(self.jobs) - 1
+        avaliabe = []
+        for i, j in enumerate(self.jobs):
+            if j.starttime < sm.starttime:
+                sm = j
+                smi = i
 
+            if j.starttime < time:
+                avaliabe.append((i, j))
+
+        if not avaliabe:
+            self.jobs.pop(smi)
+            return sm
+
+        x, y = avaliabe[-1]
+        sm: Job = y
+        smi: int = x
+        for i, j in avaliabe:
+            if j.neededtime < sm.neededtime:
+                sm = j
+                smi = i
+
+        return self.jobs.pop(smi)
+
+class Verfahren3(JobQueue):
+    def get_job(self) -> Job:
+        time = self._t
+
+        sm: Job = self.jobs[-1]
+        smi: int = len(self.jobs) - 1
+        avaliabe = []
+        for i, j in enumerate(self.jobs):
+            if j.starttime < sm.starttime:
+                sm = j
+                smi = i
+
+            if j.starttime < time:
+                avaliabe.append((i, j))
+
+        if not avaliabe:
+            self.jobs.pop(smi)
+            return sm
+
+        x, y = avaliabe[-1]
+        sm: Job = y
+        smi: int = x
+        smpr = sm.get_prio()
+        for i, j in avaliabe:
+            pr = j.get_prio()
+            if pr < smpr:
+                sm = j
+                smi = i
+                smpr = pr
+
+        return self.jobs.pop(smi)
+
+def benchmark(meth):
+    data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt1.split("\n")]
+    data = data[:]
     jobs: List[Job] = [Job(x, y) for x, y in data]
 
-    v1 = JobQueue(jobs).main()
+    m = meth(jobs)
+    x = m.main()
 
-    print(v1)
-    print(get_done_job_results(v1))
+    x = get_done_job_results(x)
+    print(f"Name: {meth.__name__}")
+    print(f"Avg m: {x[0]: <12} Max m: {x[1]: <12}")
+    print(f"Avg h: {str(divmod(x[0], 60)): <12} Max h: {str(divmod(x[1], 60)): <12}")
+    print()
 
+def main():
+
+    benchmark(Verfahren1)
+    benchmark(Verfahren2)
+    benchmark(Verfahren3)
 
 if __name__ == '__main__':
     main()

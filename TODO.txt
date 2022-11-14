@@ -1,9 +1,20 @@
+jr aufgabe 1:
+    status
+        code: done (i think)
+
+jr aufgabe 2:
+    status
+        code: done (i think)
+
+
 aufgabe 1:
-    fix if first is _ -> (ok)
+    status
+        code: done (i think)
 
 aufgabe 2:
-    complete
-    fix streching if factor x and y is same
+    status
+        code: kinda working
 
 aufgabe 4:
-    finish -> (kinda)
+    status:
+        code: done (i think)
