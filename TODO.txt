@@ -1,9 +1,9 @@
 aufgabe 1:
-    fix if first is _
+    fix if first is _ -> (ok)
 
 aufgabe 2:
     complete
     fix streching if factor x and y is same
 
 aufgabe 4:
-    finish
+    finish -> (kinda)

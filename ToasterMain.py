@@ -81,7 +81,7 @@ class AufgabeNormal1Test:
 
 
 Test([
-    # AufgabeJunior1Test,
-    # AufgabeJunior2Test,
-    AufgabeNormal1Test
+    AufgabeJunior1Test,
+    AufgabeJunior2Test,
+    AufgabeNormal1Test,
 ])

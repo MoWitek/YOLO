@@ -40,7 +40,5 @@ json_doc = {
         }
     }
 
-def save_json():
-    write("datasets.json", json.dumps(json_doc))
 
 

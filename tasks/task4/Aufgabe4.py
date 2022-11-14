@@ -2,6 +2,7 @@ from __future__ import annotations
 from datasets import NormalAufgabe4
 from typing import List, Tuple, Dict, Any
 
+debug = False
 
 class Job:
     def __init__(self, starttime, neededtime):
@@ -35,8 +36,19 @@ class DoneJob:
     def __repr__(self):
         return self.__str__()
 
+def get_done_job_results(jobs: List[DoneJob]):
+    waits = []
+    for j in jobs:
+        waits.append(j.finish - j.job.starttime)
+
+    return sum(waits) / len(waits), max(waits)
+
 
 class JobQueue:
+    working_times = 9 * 60, 17 * 60  # everything in minutes
+
+    starting_offset = working_times[0]
+    daily_work_duration = working_times[1] - working_times[0]
     def __init__(self, jobs):
         self.done_jobs: List[DoneJob] = []
         self.jobs: List[Job] = jobs
@@ -54,24 +66,32 @@ class JobQueue:
 
             # wait longer than today
             if time_left_4_job > day_time_left:
+                print("waiting", day_time_left, self._t) if debug else None
                 self._t += day_time_left
                 day_time_left -= day_time_left
+
                 return False, day_time_left
 
             # start working today
             else:
+                print("waited but now working", time_left_4_job, self._t) if debug else None
                 day_time_left -= time_left_4_job
                 self._t += time_left_4_job
 
+
         work_on_job_left = job.neededtime - job.work_done
+        # same day
         if work_on_job_left < day_time_left:
             job.work_done += work_on_job_left
+            print("did work", work_on_job_left, self._t) if debug else None
             self._t += work_on_job_left
             day_time_left -= work_on_job_left
 
             return True, day_time_left
 
+        # multi day
         else:
+            print("did work24", day_time_left, self._t) if debug else None
             self._t += day_time_left
             job.work_done += day_time_left
             day_time_left -= day_time_left
@@ -80,13 +100,11 @@ class JobQueue:
 
     def main(self):
         job: Job = self.get_job()
-        day_time_left = 8 * 60
+        day_time_left = self.daily_work_duration
         l: int = len(self.jobs)
-        c = 0
+
         while len(self.done_jobs) != l + 1:
-            c += 1
-            if c > 10:
-                break
+
             done_job, day_time_left = self.work(job, day_time_left)
 
             if done_job:
@@ -94,6 +112,7 @@ class JobQueue:
 
                 if self.jobs:
                     job = self.get_job()
+                    print("new job", job) if debug else None
                 else:
 
                     break
@@ -102,8 +121,8 @@ class JobQueue:
                 raise Exception("Fak")
 
             if day_time_left <= 0:
-                day_time_left = 8 * 60
-                self._t += 24 * 60 - day_time_left
+                day_time_left = self.daily_work_duration
+                self._t += 24 * 60 - self.daily_work_duration
 
         return self.done_jobs
 
@@ -111,13 +130,14 @@ class JobQueue:
 def main():
     data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt0.split("\n")]
 
-    data = data[:1]
+    data = data[:5]
 
     jobs: List[Job] = [Job(x, y) for x, y in data]
 
     v1 = JobQueue(jobs).main()
 
     print(v1)
+    print(get_done_job_results(v1))
 
 
 if __name__ == '__main__':

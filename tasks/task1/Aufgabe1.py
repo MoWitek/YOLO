@@ -21,6 +21,9 @@ def preprocess_data(string: str):
 def searcher(words, pattern: str):
     pattern = pattern.split(" ")
 
+    while pattern[0] == "_":  # make sure pat[0] is always a word
+        pattern.pop(0)
+
     inxs = [i for i, v in enumerate(words) if v == pattern[0]]  # get all positions of first word, since its always known
 
     possibilities = [(words[inx: inx + len(pattern)]) for inx in inxs]  # get the first word and a few words after it
@@ -46,6 +49,6 @@ def regex_search(pattern, text: str = NormalAufgabe1.alice):
     return searcher(words, pattern)
 
 if __name__ == '__main__':
-    pat = NormalAufgabe1.txt5
+    pat = "_ " + NormalAufgabe1.txt5
     print(pat)
     print(regex_search(pat))

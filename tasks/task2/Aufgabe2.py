@@ -1,5 +1,6 @@
 from random import choice, seed
-from typing import List
+from typing import List, Tuple
+
 seed("YOLO")
 
 
@@ -111,12 +112,13 @@ class Crystal:
         self.colour = colour if colour else choice(["\033[92m", "\033[93m", "\033[94m", "\033[95m", "\033[96m"])
 
 
-def main(crystals: List[Crystal]):
+def main(crystals: List[Crystal], board_size: Tuple[int, int]):
+
+    crystals = sorted(crystals, key=lambda c: sum([c.xg, c.yg]), reverse=True)
 
     crystals = [(f"{cry.colour}{i}\033[0m", cry.x, cry.y, cry.xg, cry.yg) for i, cry in enumerate(crystals, 1)]
 
-    board_width, board_height = 20, 20
-
+    board_width, board_height = board_size
     b = make_board(board_width, board_height, 0)
     for n in range(max(list((board_width, board_height)))+1):
         for cid, cx, cy, cgx, cgy in crystals:
@@ -130,9 +132,9 @@ def main(crystals: List[Crystal]):
 if __name__ == '__main__':
     main([
         Crystal((2, 2)),
-        Crystal((4, 4)),
+        Crystal((4, 7), grow=(2, 3)),
         Crystal((18, 4), "\033[95m", grow=(1, 4))
-    ])
+    ], (20, 20))
 
     arr = [
         [0, 1, 0],
