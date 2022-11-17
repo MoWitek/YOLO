@@ -171,9 +171,7 @@ def get_random_crystals(ammount, board_size):
     return crystals
 
 if __name__ == '__main__':
-    board_sz = 200, 200
-    crys = get_random_crystals(1000, board_sz)
+    board_sz = 10, 10 
+    crys = get_random_crystals(4, board_sz)
 
     main(crys, board_sz)
-
-
