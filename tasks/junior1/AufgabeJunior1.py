@@ -24,6 +24,15 @@ def get_vokalgrupe(word):
 
     return sylables
 
+def vocals(word):
+    syl1 = get_vokalgrupe(word)
+
+    if not has_voc(syl1[0]):
+        syl1.pop(0)
+    syl1 = list(filter(has_voc, syl1))
+
+    return syl1
+
 # rule nr 1
 
 # get vocgruppe of both, check if following part is same
@@ -31,16 +40,13 @@ def regel1(w1: str, w2: str):
     def get_last_same(word):
         syl1 = get_vokalgrupe(word)
 
-        if not has_voc(syl1[0]):
-            syl1.pop(0)
-
         buff = ""
         br = 0
         for sr in syl1[::-1]:
             buff += sr[::-1]
             if has_voc(sr):
                 br += 1
-                if br == 2:
+                if br == (2 if len(vocals(word)) > 1 else 1):
                     break
 
         return buff[::-1]
@@ -56,16 +62,6 @@ def regel1(w1: str, w2: str):
 # rule 2
 # voc gruppe + following part >= 50% of word
 def regel2(w1: str, w2: str):
-    # get vocals of the word
-    def vocals(word):
-        syl1 = get_vokalgrupe(word)
-
-        if not has_voc(syl1[0]):
-            syl1.pop(0)
-        syl1 = list(filter(has_voc, syl1))
-
-        return syl1
-
     v1, v2 = vocals(w1), vocals(w2)
 
     # prevent errors due to word having only 1 vocal
@@ -77,7 +73,7 @@ def regel2(w1: str, w2: str):
         syl1 = get_vokalgrupe(word)
 
         buff = ""
-        for l in syl1[::-1][:4]:
+        for l in syl1[::-1][:4]:  # :4 = >< _ ><
             buff += l
 
         return not ((len(buff) / len(word)) < .5)
@@ -115,14 +111,20 @@ def sorter(words: list):
     finally:
         return pairs, lost
 
+def nice_print(ls, lost):
+    srs = []
+    for x, y in ls:
+        srs.append(f"{x} + {y}")
 
-def match_rhymes(data: str = Aufgabe.txt3):
+    return ", ".join(srs) + "\n" + ", ".join(lost)
+
+def match_rhymes(data: str = Aufgabe.txt0):
     words = data.lower().split("\n")
 
     return sorter(words)
 
 
 if __name__ == "__main__":
-    print(match_rhymes(Aufgabe.txt2))
-
-    print(regel123("konsumption", "absorption"))
+    txt = Aufgabe.txt2
+    print(match_rhymes(txt))
+    print(nice_print(*match_rhymes(txt)))
