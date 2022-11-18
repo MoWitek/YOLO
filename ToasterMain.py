@@ -11,8 +11,7 @@ class AufgabeJunior1Test:
 
         # not entirely checked
         def test0(self):
-            assert AufgabeJunior1.match_rhymes(datasets.JuniorAufgabe1.txt0) == ([('schwank', 'schlank'), ('schiene', 'biene'), ('recht', 'knecht'), ('glühen', 'bemühen')], ['hygiene', 'hersagen', 'breitschlagen'])
-
+            assert AufgabeJunior1.match_rhymes(datasets.JuniorAufgabe1.txt0) == ([('schiene', 'biene'), ('recht', 'knecht'), ('glühen', 'bemühen')], ['schwank', 'schlank', 'hygiene', 'hersagen', 'breitschlagen'])
         # not entirely checked
         def test1(self):
             assert AufgabeJunior1.match_rhymes(datasets.JuniorAufgabe1.txt1) == ([('wildnis', 'bildnis'), ('note', 'brote')], ['xor-funktion', 'paprikaschote', 'konsumption', 'geständnis', 'absorption'])

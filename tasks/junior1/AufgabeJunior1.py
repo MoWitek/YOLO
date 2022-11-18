@@ -33,7 +33,6 @@ def vocals(word):
 
     return syl1
 
-# rule nr 1
 
 # get vocgruppe of both, check if following part is same
 def regel1(w1: str, w2: str):
@@ -46,7 +45,7 @@ def regel1(w1: str, w2: str):
             buff += sr[::-1]
             if has_voc(sr):
                 br += 1
-                if br == (2 if len(vocals(word)) > 1 else 1):
+                if br == (1 if len(vocals(word)) == 1 else 2):
                     break
 
         return buff[::-1]
@@ -55,32 +54,23 @@ def regel1(w1: str, w2: str):
 
     return v1 == v2
 
-# 2) In jedem der beiden Wörter enthält die maß-
-# gebliche Vokalgruppe und was ihr folgt mindestens
-# die Hälfte der Buchstaben.
-#
-# rule 2
+
 # voc gruppe + following part >= 50% of word
 def regel2(w1: str, w2: str):
-    v1, v2 = vocals(w1), vocals(w2)
-
-    # prevent errors due to word having only 1 vocal
-    if (v1[(-2) if len(v1) > 1 else -1]) != (v2[(-2) if len(v2) > 1 else -1]):
-        return False
 
     # check if the words following part is bigger than 50%
     def bigger_than_half(word):
         syl1 = get_vokalgrupe(word)
 
         buff = ""
-        for l in syl1[::-1][:4]:  # :4 = >< _ ><
+        for l in syl1[::-1][:(1 if len(vocals(word)) == 1 else 2) * 2]:
             buff += l
 
         return not ((len(buff) / len(word)) < .5)
 
     return not (not bigger_than_half(w1) or not bigger_than_half(w2))
 
-# rule 3
+
 # word 1 cant end with word 2 and otherwise
 def regel3(w1: str, w2: str):
     return not w1.endswith(w2) or w2.endswith(w1)
@@ -125,6 +115,8 @@ def match_rhymes(data: str = Aufgabe.txt0):
 
 
 if __name__ == "__main__":
-    txt = Aufgabe.txt2
-    print(match_rhymes(txt))
+    txt = Aufgabe.txt1
+    # print(match_rhymes(txt))
     print(nice_print(*match_rhymes(txt)))
+
+    # print(regel123("schwank", "schlank"))
