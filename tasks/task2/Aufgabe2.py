@@ -1,39 +1,43 @@
-from random import choice, seed
-from typing import List
+from random import choice, seed, randint
+from typing import List, Tuple
 seed("YOLO")
 
-
-def create_slope(sz, fill, back):
+# this creates one quarter of the diamond shape for the crystal
+def create_slope(size, fill, back):
     ar = []
-    for n in range(sz):
+    for n in range(size):
         a2 = []
         a2.extend([fill for n in range(n + 1)])
-        a2.extend([back for n in range(sz - n - 1)])
+        a2.extend([back for n in range(size - n - 1)])
         ar.append(a2)
 
     return ar
 
-
+# make the board look ok
 def print_board(board):
     for y in range(len(board)):
         for x in range(len(board[0])):
             print(board[y][x], end=" ")
         print()
 
-
+# streches the diamond so you can add x and y growth multipliers
 def strech_array(arr, strech_factor: int):
     mid = len(arr) // 2
     new_arr = []
 
+    # if arr empty return
     if not arr:
         return arr
-
+    
+    # strech left side of the center
     for x in arr[:mid]:
         for _ in range(strech_factor):
             new_arr.append(x.copy())
 
+    # copy center
     new_arr.append(arr[mid].copy())
 
+    # strech right side of the center
     for x in arr[mid + 1:]:
         for _ in range(strech_factor):
             new_arr.append(x.copy())
@@ -44,13 +48,15 @@ def strech_array(arr, strech_factor: int):
 def rotate_array(array):
     return [list(v) for v in list(zip(*array[::-1]))]
 
-
+# fuzes slopes into a diamond
 def fuze_slopes(s, fill=1, back=0, xmul: int = 1, ymul: int = 1):
+    # make slopes and oriante every in a diferent direction
     a1 = create_slope(s, fill, back)
     a2 = rotate_array(create_slope(s, fill, back))
     a3 = rotate_array(rotate_array(create_slope(s, fill, back)))
     a4 = rotate_array(rotate_array(rotate_array(create_slope(s, fill, back))))
 
+    # FUZE
     arr = []
     for a, b in zip(a4, a1):
         arr.append([])
@@ -61,9 +67,11 @@ def fuze_slopes(s, fill=1, back=0, xmul: int = 1, ymul: int = 1):
         arr[-1].extend(c)
         arr[-1].extend(d[1:])
 
+    # adopt y growth multipliers
     if ymul != 1:
         arr = strech_array(arr, ymul)
 
+    # adopt x growth multipliers
     if xmul != 1:
         arr = rotate_array(arr)
         arr = strech_array(arr, xmul)
@@ -71,7 +79,7 @@ def fuze_slopes(s, fill=1, back=0, xmul: int = 1, ymul: int = 1):
 
     return arr
 
-
+# easy board creation
 def make_board(x, y, default_value=None):
     return [
         [
@@ -79,10 +87,11 @@ def make_board(x, y, default_value=None):
         ] for _ in range(y)
     ]
 
-
+# merge the diamonds into the board
 def merge_arrays(main_arr, second, pos, criterium: callable = lambda v1, v2: v2 > v1):
     x, y = pos
 
+    # center the diamond on its center and not top left
     if second:
         x -= len(second[0]) // 2
     else:
@@ -91,51 +100,78 @@ def merge_arrays(main_arr, second, pos, criterium: callable = lambda v1, v2: v2 
 
     for yp in range(len(second)):
         for xp in range(len(second[0])):
+            # make sure crystals get indexes inside the board 
+            # / ->
+            # |
             if y + yp >= len(main_arr):
                 continue
             if x + xp >= len(main_arr[0]):
                 continue
+            
+            # make sure crystals done get negative indexes
+            #   <-
+            # /\
             if y + yp < 0:
                 continue
             if x + xp < 0:
                 continue
-
+            
+            # dont overwrite spaces
             if criterium(main_arr[y + yp][x + xp], second[yp][xp]):
                 main_arr[y + yp][x + xp] = second[yp][xp]
 
-
+# dataclass
 class Crystal:
     def __init__(self, pos, colour=None, grow: tuple = (1, 1)):
         self.x, self.y = pos
         self.xg, self.yg = grow
-        self.colour = colour if colour else choice(["\033[92m", "\033[93m", "\033[94m", "\033[95m", "\033[96m"])
-
-
-def main(crystals: List[Crystal]):
-
-    crystals = [(f"{cry.colour}{i}\033[0m", cry.x, cry.y, cry.xg, cry.yg) for i, cry in enumerate(crystals, 1)]
-
-    board_width, board_height = 20, 20
-
+        # random colour for the shade
+        self.colour = colour if colour else "\033[{}m".format(choice([30, 31, 32, 33, 34, 35, 36, 37, 90, 91, 92, 93, 94, 95, 96]))
+# main
+def main(crystals: List[Crystal], board_size: Tuple[int, int], only_final_frame=True):
+    # mk board
+    board_width, board_height = board_size
     b = make_board(board_width, board_height, 0)
+    
+    # crystals with higher growths get merged earlier
+    crystals = sorted(crystals, key=lambda c: sum([c.xg, c.yg]), reverse=True)
+
+    # convert the dataclass into raw data
+    crystals = [(cry.colour, cry.x, cry.y, cry.xg, cry.yg) for i, cry in enumerate(crystals, 1)]
+
+
     for n in range(max(list((board_width, board_height)))+1):
-        for cid, cx, cy, cgx, cgy in crystals:
-            f = fuze_slopes(n, cid, xmul=cgx, ymul=cgy)
-            merge_arrays(b, f, (cx, cy), lambda v1, v2: v1 == 0)
+        # create diamonds and merge them into the main baord
+        for cc, cx, cy, cgx, cgy in crystals:
+            f = fuze_slopes(n, f"{cc}X\033[0m", xmul=cgx, ymul=cgy)  # create diamond
+            merge_arrays(b, f, (cx, cy), lambda v1, v2: v1 == 0)  # merging
+    
+        # display
+        if not only_final_frame:
+            print_board(b)
+            print()
 
-        print_board(b)
-        print()
+        # stop if all spaces are taken
+        arr = []
+        for row in b:
+            arr.extend(row)
+        if 0 not in arr:
+            print_board(b)
+            break
 
+
+# create random positions for crystals
+def get_random_crystals(ammount, board_size):
+    xb, yb = board_size
+    crystals = []
+    for _ in range(ammount):
+        x = randint(0, xb)
+        y = randint(0, yb)
+        crystals.append(Crystal((x, y)))
+    return crystals
 
 if __name__ == '__main__':
-    main([
-        Crystal((2, 2)),
-        Crystal((4, 4)),
-        Crystal((18, 4), "\033[95m", grow=(1, 4))
-    ])
+    board_sz = 10, 10 
+    crys = get_random_crystals(4, board_sz)
 
-    arr = [
-        [0, 1, 0],
-        [2, 1, 2],
-        [0, 1, 0],
-    ]
+    main(crys, board_sz)
