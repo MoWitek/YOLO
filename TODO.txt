@@ -1,28 +1,28 @@
 jr aufgabe 1:
     status
         code: done (i think)
-        docu: 404
+        docu: done
 
 jr aufgabe 2:
     status
         code: done (i think)
-        docu: 404
+        docu: done
 
 aufgabe 1:
     status
         code: done (i think)
-        docu: 404
+        docu: done
 
 aufgabe 2:
     status
         code: kinda working
         docu:
             in_file: 80%
-            own_doc: 404
+            own_doc: done
 
 aufgabe 4:
     status:
         code: done (i think)
         docu:
             in_file: done (i think)
-            own_doc: 404
+            own_doc: done (needs check)
