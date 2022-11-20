@@ -221,7 +221,8 @@ class Verfahren3(JobQueue):
 
 # benchmark task to show the algo improvements
 def benchmark(meth, show_hrs = False):
-    data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in NormalAufgabe4.txt1.split("\n")]
+    data: str = NormalAufgabe4.txt1
+    data: List[Tuple[int, ...]] = [tuple([int(y) for y in x.split(" ", 1)]) for x in data.split("\n")]
     jobs: List[Job] = [Job(x, y) for x, y in data]
 
     m = meth(jobs)
