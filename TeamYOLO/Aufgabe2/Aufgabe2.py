@@ -1,6 +1,5 @@
 from random import seed, randint
 from typing import List, Tuple, Any
-from time import sleep
 
 import cv2
 import numpy as np

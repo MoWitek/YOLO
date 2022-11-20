@@ -1,6 +1,5 @@
 from dataset_creator import json_doc
 
-# _bloat = loads(read("datasets.json"))
 _bloat = json_doc
 
 class JuniorAufgabe1:

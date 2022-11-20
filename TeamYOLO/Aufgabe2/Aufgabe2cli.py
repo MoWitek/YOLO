@@ -1,12 +1,6 @@
-from random import seed, randint
-from typing import List, Tuple, Any
-from time import sleep
-
-import cv2
-import numpy as np
-
+from random import choice, seed, randint
+from typing import List, Tuple
 seed("YOLO")
-
 
 # this creates one quarter of the diamond shape for the crystal
 def create_slope(size, fill, back):
@@ -19,14 +13,12 @@ def create_slope(size, fill, back):
 
     return ar
 
-
 # make the board look ok
 def print_board(board):
     for y in range(len(board)):
         for x in range(len(board[0])):
             print(board[y][x], end=" ")
         print()
-
 
 # streches the diamond so you can add x and y growth multipliers
 def strech_array(arr, strech_factor: int):
@@ -36,7 +28,7 @@ def strech_array(arr, strech_factor: int):
     # if arr empty return
     if not arr:
         return arr
-
+    
     # strech left side of the center
     for x in arr[:mid]:
         for _ in range(strech_factor):
@@ -56,9 +48,8 @@ def strech_array(arr, strech_factor: int):
 def rotate_array(array):
     return [list(v) for v in list(zip(*array[::-1]))]
 
-
 # fuzes slopes into a diamond
-def fuze_slopes(s, fill: Any = 1, back: Any = 0, xmul: int = 1, ymul: int = 1):
+def fuze_slopes(s, fill=1, back=0, xmul: int = 1, ymul: int = 1):
     # make slopes and oriante every in a diferent direction
     a1 = create_slope(s, fill, back)
     a2 = rotate_array(create_slope(s, fill, back))
@@ -88,7 +79,6 @@ def fuze_slopes(s, fill: Any = 1, back: Any = 0, xmul: int = 1, ymul: int = 1):
 
     return arr
 
-
 # easy board creation
 def make_board(x, y, default_value=None):
     return [
@@ -97,11 +87,9 @@ def make_board(x, y, default_value=None):
         ] for _ in range(y)
     ]
 
-
 # merge the diamonds into the board
 def merge_arrays(main_arr, second, pos, criterium: callable = lambda v1, v2: v2 > v1):
     x, y = pos
-    no_overrides = False
 
     # center the diamond on its center and not top left
     if second:
@@ -112,14 +100,14 @@ def merge_arrays(main_arr, second, pos, criterium: callable = lambda v1, v2: v2 
 
     for yp in range(len(second)):
         for xp in range(len(second[0])):
-            # make sure crystals get indexes inside the board
+            # make sure crystals get indexes inside the board 
             # / ->
             # |
             if y + yp >= len(main_arr):
                 continue
             if x + xp >= len(main_arr[0]):
                 continue
-
+            
             # make sure crystals done get negative indexes
             #   <-
             # /\
@@ -127,63 +115,49 @@ def merge_arrays(main_arr, second, pos, criterium: callable = lambda v1, v2: v2 
                 continue
             if x + xp < 0:
                 continue
-
+            
             # dont overwrite spaces
-
             if criterium(main_arr[y + yp][x + xp], second[yp][xp]):
                 main_arr[y + yp][x + xp] = second[yp][xp]
-                no_overrides = True
-
-    return no_overrides
 
 # dataclass
 class Crystal:
-    def __init__(self, pos, colour: Tuple[int, int, int]=None, grow: tuple = (1, 1)):
+    def __init__(self, pos, colour=None, grow: tuple = (1, 1)):
         self.x, self.y = pos
         self.xg, self.yg = grow
         # random colour for the shade
-        self.colour = [randint(0, 256) for _ in range(3)]
-
-
+        self.colour = colour if colour else "\033[{}m".format(choice([30, 31, 32, 33, 34, 35, 36, 37, 90, 91, 92, 93, 94, 95, 96]))
 # main
-def main(crystals: List[Crystal], board_size: Tuple[int, int], cv2_upscale=None):
-    frames = []
-
+def main(crystals: List[Crystal], board_size: Tuple[int, int], only_final_frame=True):
     # mk board
     board_width, board_height = board_size
-    b = make_board(board_width, board_height, [0, 0, 0])
-
+    b = make_board(board_width, board_height, 0)
+    
     # crystals with higher growths get merged earlier
     crystals = sorted(crystals, key=lambda c: sum([c.xg, c.yg]), reverse=True)
 
     # convert the dataclass into raw data
-    crystals = [(i, cry.colour, cry.x, cry.y, cry.xg, cry.yg) for i, cry in enumerate(crystals, 1)]
+    crystals = [(cry.colour, cry.x, cry.y, cry.xg, cry.yg) for i, cry in enumerate(crystals, 1)]
 
-    burn_out_crystals = set()
-    for n in range(max(list((board_width, board_height))) + 1):
 
+    for n in range(max(list((board_width, board_height)))+1):
         # create diamonds and merge them into the main baord
-        for id, cc, cx, cy, cgx, cgy in crystals:
-            if id not in burn_out_crystals:
-                f = fuze_slopes(n, fill=cc, back=[0, 0, 0],  xmul=cgx, ymul=cgy)  # create diamon
+        for cc, cx, cy, cgx, cgy in crystals:
+            f = fuze_slopes(n, f"{cc}X\033[0m", xmul=cgx, ymul=cgy)  # create diamond
+            merge_arrays(b, f, (cx, cy), lambda v1, v2: v1 == 0)  # merging
+    
+        # display
+        if not only_final_frame:
+            print_board(b)
+            print()
 
-                x = merge_arrays(b, f, (cx, cy), lambda v1, v2: v1 == [0, 0, 0])  # merging
-
-                if not x and f != []:
-                    burn_out_crystals.add(id)
-
-        # displaying and stuff
-        x = np.asarray(b, np.uint8)
-        frames.append(x)
-        if cv2_upscale:
-            x = cv2.resize(x, cv2_upscale)
-        cv2.imshow("frame", x)
-        cv2.waitKey(2)
-
-        if len(burn_out_crystals) == len(crystals):
+        # stop if all spaces are taken
+        arr = []
+        for row in b:
+            arr.extend(row)
+        if 0 not in arr:
+            print_board(b)
             break
-
-    return frames
 
 
 # create random positions for crystals
@@ -191,37 +165,13 @@ def get_random_crystals(ammount, board_size):
     xb, yb = board_size
     crystals = []
     for _ in range(ammount):
-        x = randint(0, xb - 1)
-        y = randint(0, yb - 1)
+        x = randint(0, xb)
+        y = randint(0, yb)
         crystals.append(Crystal((x, y)))
     return crystals
 
-def make_movie(frames):
-    # len(frames) // clip_ln + 1
-    vid = cv2.VideoWriter("crystals.mkv", cv2.VideoWriter_fourcc(*"PIM1"), 24, board_sz)  # DIVX PIM1 MJPG
-
-    for f in frames:
-        vid.write(f)
-        vid.write(f)
-        vid.write(f)
-
-    vid.release()
-
-
 if __name__ == '__main__':
-    board_sz, crystals = (1024, 1024), 1024
+    board_sz = 10, 10 
+    crys = get_random_crystals(4, board_sz)
 
-    crys = get_random_crystals(crystals, board_sz)
-
-    frames = main(crys, board_sz)
-
-    cv2.imwrite("crystals.png", frames[-1])
-
-    make_movie(frames)
-
-    cv2.waitKey(27)
-
-
-
-
-
+    main(crys, board_sz)
